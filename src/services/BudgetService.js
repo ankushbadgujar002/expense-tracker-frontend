@@ -1,18 +1,16 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:8080/users";
+const BASE_URL = `${import.meta.env.VITE_API_URL}/users`;
 const getUserId = () => localStorage.getItem("userId");
 
 const getAuthHeader = () => {
     const token = localStorage.getItem("token");
-
     return {
         headers: {
             Authorization: `Bearer ${token}`
         }
     };
 };
-
 
 export const getBudget = () => {
     return axios.get(
@@ -29,6 +27,5 @@ export const updateBudget = async(budget) => {
         },
         getAuthHeader()
     );
-
     return res.data;
 };

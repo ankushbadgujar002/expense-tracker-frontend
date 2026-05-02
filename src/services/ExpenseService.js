@@ -1,12 +1,10 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:8080/expenses";
+const BASE_URL = `${import.meta.env.VITE_API_URL}/expenses`;
 
 const getAuthHeader = () => {
     const token = localStorage.getItem("token");
-
-    if (!token) return {}; // 🔥 DO NOT send invalid header
-
+    if (!token) return {};
     return {
         headers: {
             Authorization: `Bearer ${token}`
@@ -41,7 +39,6 @@ export const deleteExpense = (id) => {
 
 export const getMonthlySummary = () => {
     const userId = localStorage.getItem("userId");
-
     return axios.get(
         `${BASE_URL}/monthly-summary/${userId}`,
         getAuthHeader()
