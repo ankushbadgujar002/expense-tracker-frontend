@@ -1,4 +1,4 @@
-import { Search } from 'lucide-react'
+import { Search, Download } from 'lucide-react'
 import React from 'react'
 
 const ExpenseFilters = ({
@@ -10,11 +10,31 @@ const ExpenseFilters = ({
     setSearchText,
     expenses
 }) => {
+
+    const handleExportCSV = () => {
+        if (!expenses || expenses.length === 0) return;
+        const headers = ["Title", "Amount", "Category", "Date"];
+        const rows = expenses.map(exp => [
+            `"${(exp.title || '').replace(/"/g, '""')}"`,
+            exp.amount,
+            exp.category,
+            exp.date
+        ]);
+        const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `expenses_${new Date().toISOString().split("T")[0]}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
     return (
         <div className='w-full flex items-center justify-around flex-wrap mb-5 gap-3 lg:gap-6'>
 
             <select
-                className="w-70 p-2 lg:p-3 rounded-xl outline-none 
+                className="w-full sm:w-70 p-2 lg:p-3 rounded-xl outline-none 
                 bg-white dark:bg-black 
                 text-gray-700 dark:text-white 
                 border border-gray-100 dark:border-gray-700 
@@ -36,7 +56,7 @@ const ExpenseFilters = ({
             </select>
 
             <select
-                className="w-70 p-2 lg:p-3 rounded-xl outline-none 
+                className="w-full sm:w-70 p-2 lg:p-3 rounded-xl outline-none 
                 bg-white dark:bg-black 
                 text-gray-700 dark:text-white 
                 border border-gray-100 dark:border-gray-700 
@@ -54,7 +74,7 @@ const ExpenseFilters = ({
                 <option value="Z-A">Category Z-A</option>
             </select>
 
-            <div className='w-70 p-3 rounded-xl outline-none 
+            <div className='w-full sm:w-70 p-3 rounded-xl outline-none 
             bg-white dark:bg-black 
             border border-gray-100 dark:border-gray-700 
             shadow hover:shadow-md 
@@ -71,6 +91,16 @@ const ExpenseFilters = ({
 
                 <Search className='text-gray-600 dark:text-white active:scale-75 transition-all duration-300' />
             </div>
+
+            <button
+                onClick={handleExportCSV}
+                title="Export Expenses to CSV"
+                disabled={!expenses || expenses.length === 0}
+                className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-blue-500 hover:bg-blue-600 active:scale-95 text-white font-medium shadow flex items-center justify-center gap-2 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+                <Download size={18} />
+                <span>Export CSV</span>
+            </button>
 
         </div>
     )

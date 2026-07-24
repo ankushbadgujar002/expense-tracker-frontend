@@ -1,11 +1,21 @@
-import { SquarePen, Trash2 } from 'lucide-react';
+import { SquarePen, Trash2, FileQuestion } from 'lucide-react';
 import React from 'react'
 import { categoryColors } from '../../utils/categoryColors';
 
 const ExpenseTable = ({ processedExpenses, handleDelete, handleEdit }) => {
+
+    if (!processedExpenses || processedExpenses.length === 0) {
+        return (
+            <div className="text-center py-12 text-gray-500 dark:text-gray-400">
+                <FileQuestion className="mx-auto size-12 mb-3 text-gray-400 dark:text-gray-500" />
+                <p className="text-base font-medium">No expenses found matching your search or filters.</p>
+            </div>
+        );
+    }
+
     return (
-        <>
-            <table className="w-full text-center border-collapse overflow-x-scroll">
+        <div className="overflow-x-auto w-full">
+            <table className="w-full text-center border-collapse">
 
                 <thead className="bg-gray-50 dark:bg-gray-900 text-gray-600 dark:text-white text-sm uppercase tracking-wide sticky top-0 z-10">
                     <tr className='border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900 transition'>
@@ -86,7 +96,7 @@ const ExpenseTable = ({ processedExpenses, handleDelete, handleEdit }) => {
                 </tbody>
 
             </table>
-        </>
+        </div>
     )
 }
 

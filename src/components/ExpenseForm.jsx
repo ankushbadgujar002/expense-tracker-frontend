@@ -106,6 +106,7 @@ const ExpenseForm = () => {
                     p-2 rounded-xl outline-none shadow w-full'
                             value={date}
                             onChange={(e) => setDate(e.target.value)}
+                            max={new Date().toISOString().split("T")[0]}
                             type="date"
                         />
 

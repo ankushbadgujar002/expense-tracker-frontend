@@ -11,7 +11,7 @@ const EditExpenseModal = ({ showModal, setShowModal, selectedExpense, formData, 
         >
             <div
                 onClick={(e) => e.stopPropagation()}
-                className={`bg-[#f3f4f6] dark:bg-gray-900 p-6 rounded-xl w-96 shadow-xl
+                className={`bg-[#f3f4f6] dark:bg-gray-900 p-6 rounded-xl w-full max-w-md mx-4 shadow-xl
                         transform transition-all duration-300 ease-out
                         ${showModal
                         ? "translate-y-0 scale-100 opacity-100"
@@ -76,6 +76,7 @@ const EditExpenseModal = ({ showModal, setShowModal, selectedExpense, formData, 
                         type="date"
                         value={formData.date || ""}
                         onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                        max={new Date().toISOString().split("T")[0]}
                         className="w-full p-3 rounded-xl bg-white dark:bg-gray-800 dark:text-white 
                         shadow hover:shadow-md border border-gray-100 dark:border-gray-700 outline-none"
                     />
