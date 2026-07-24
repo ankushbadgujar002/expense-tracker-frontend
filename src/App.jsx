@@ -5,14 +5,16 @@ import Dashboard from "./pages/Dashboard";
 import AddExpense from "./pages/AddExpense";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
+import { AuthProvider, useAuth } from "./context/AuthContext";
 import { Bounce, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const App = () => {
-
+const AppContent = () => {
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem("theme") || "light";
   });
+
+  const { isLoggedIn } = useAuth();
 
   useEffect(() => {
     if (theme === "dark") {
@@ -27,8 +29,6 @@ const App = () => {
   const toggleTheme = () => {
     setTheme(prev => (prev === "dark" ? "light" : "dark"));
   };
-
-  const isLoggedIn = !!localStorage.getItem("token");
 
   return (
     <div className="p-6 min-h-dvh bg-gray-50 dark:bg-black dark:text-white transition-all duration-500 ease-in-out">
@@ -66,6 +66,14 @@ const App = () => {
       />
     </div>
   );
-}
+};
+
+const App = () => {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
+  );
+};
 
 export default App;

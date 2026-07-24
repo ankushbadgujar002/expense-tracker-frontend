@@ -5,13 +5,15 @@ import Swal from "sweetalert2";
 import { useEffect, useState } from "react";
 import { getSwalTheme } from "../utils/swalTheme";
 
+import { useAuth } from "../context/AuthContext";
+
 function Navbar({ theme, toggleTheme }) {
 
-    const token = localStorage.getItem("token");
+    const { token, userName, logout } = useAuth();
 
     const handleLogout = () => {
 
-        const username = localStorage.getItem("userName");
+        const username = userName || localStorage.getItem("userName") || "";
         const theme = getSwalTheme();
     
         Swal.fire({
@@ -28,12 +30,7 @@ function Navbar({ theme, toggleTheme }) {
         }).then((result) => {
     
             if (result.isConfirmed) {
-    
-                localStorage.removeItem("token");
-                localStorage.removeItem("userId");
-                localStorage.removeItem("userName");
-                sessionStorage.removeItem("welcomeShown");
-    
+                logout();
                 Swal.fire({
                     title: "Logged out!",
                     text: "You have been successfully logged out.",

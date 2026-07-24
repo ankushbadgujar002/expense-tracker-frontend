@@ -1,31 +1,15 @@
-import axios from "axios";
+import apiClient from "./apiClient";
 
-const BASE_URL = `${import.meta.env.VITE_API_URL}/users`;
 const getUserId = () => localStorage.getItem("userId");
 
-const getAuthHeader = () => {
-    const token = localStorage.getItem("token");
-    return {
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
-    };
-};
-
 export const getBudget = () => {
-    return axios.get(
-        `${BASE_URL}/budget/${getUserId()}`,
-        getAuthHeader()
-    );
+    return apiClient.get(`/users/budget/${getUserId()}`);
 };
 
-export const updateBudget = async(budget) => {
-    const res = await axios.put(
-        `${BASE_URL}/budget`, {
-            userId: getUserId(),
-            totalBudget: budget
-        },
-        getAuthHeader()
-    );
+export const updateBudget = async (budget) => {
+    const res = await apiClient.put(`/users/budget`, {
+        userId: getUserId(),
+        totalBudget: budget
+    });
     return res.data;
 };

@@ -1,16 +1,4 @@
-import axios from "axios";
-
-const BASE_URL = `${import.meta.env.VITE_API_URL}/expenses`;
-
-const getAuthHeader = () => {
-    const token = localStorage.getItem("token");
-    if (!token) return {};
-    return {
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
-    };
-};
+import apiClient from "./apiClient";
 
 const getUserId = () => {
     const id = localStorage.getItem("userId");
@@ -18,29 +6,22 @@ const getUserId = () => {
 };
 
 export const getExpenses = () => {
-    return axios.get(`${BASE_URL}/user/${getUserId()}`, getAuthHeader());
+    return apiClient.get(`/expenses/user/${getUserId()}`);
 };
 
 export const addExpense = (expense) => {
-    return axios.post(
-        `${BASE_URL}/user/${getUserId()}`,
-        expense,
-        getAuthHeader()
-    );
+    return apiClient.post(`/expenses/user/${getUserId()}`, expense);
 };
 
 export const updateExpense = (id, expense) => {
-    return axios.put(`${BASE_URL}/${id}`, expense, getAuthHeader());
+    return apiClient.put(`/expenses/${id}`, expense);
 };
 
 export const deleteExpense = (id) => {
-    return axios.delete(`${BASE_URL}/${id}`, getAuthHeader());
+    return apiClient.delete(`/expenses/${id}`);
 };
 
 export const getMonthlySummary = () => {
-    const userId = localStorage.getItem("userId");
-    return axios.get(
-        `${BASE_URL}/monthly-summary/${userId}`,
-        getAuthHeader()
-    );
+    const userId = getUserId();
+    return apiClient.get(`/expenses/monthly-summary/${userId}`);
 };

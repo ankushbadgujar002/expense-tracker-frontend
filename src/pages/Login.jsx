@@ -5,7 +5,11 @@ import img from '../assets/images/login.png'
 import FloatingInput from '../components/FloatingInput'
 import { toast } from 'react-toastify'
 
+import { useAuth } from '../context/AuthContext'
+
 const Login = () => {
+
+    const { login } = useAuth();
 
     const [data, setData] = useState({
         email: "",
@@ -23,26 +27,28 @@ const Login = () => {
         }
 
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
+            const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:8080";
+            const response = await fetch(`${baseUrl}/api/auth/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data)
             });
 
             const result = await response.json();
-            console.log(response);
 
             if (!response.ok) {
-                toast.error(result.message);
+                toast.error(result.message || "Login failed");
                 setError(true);
                 return;
             }
 
             setError(false);
 
-            localStorage.setItem("token", result.token);
-            localStorage.setItem("userId", result.userId);
-            localStorage.setItem("userName", result.username);
+            login({
+                token: result.token,
+                userId: result.userId,
+                username: result.username
+            });
 
             setData({ email: "", password: "" });
             window.location.href = "/dashboard";
