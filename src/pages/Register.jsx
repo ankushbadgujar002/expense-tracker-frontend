@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Lock, Mail, Key } from 'lucide-react';
+import { Lock, Mail, Key, Loader2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import img from '../assets/images/login.png'
 import FloatingInput from '../components/FloatingInput';
@@ -16,17 +16,20 @@ const Register = () => {
     const navigate = useNavigate();
 
     const [errors, setErrors] = useState({});
+    const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         if (!validate()) {
-            toast.error("please fix the form errors !");
+            toast.error("Please fix the form errors!");
             return;
         }
 
+        setLoading(true);
+
         try {
-            const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:8080";
+            const baseUrl = import.meta.env.VITE_API_URL || "https://expense-tracker-backend-1-885b.onrender.com";
             const response = await fetch(`${baseUrl}/api/auth/register`, {
                 method: "POST",
                 headers: {
@@ -38,11 +41,11 @@ const Register = () => {
             const result = await response.json();
 
             if (!response.ok) {
-                toast.error(result.message);
+                toast.error(result.message || "Registration failed");
                 return;
             }
 
-            toast.success(result.message);
+            toast.success(result.message || "User Registered Successfully!");
 
             setData({
                 username: "",
@@ -52,7 +55,9 @@ const Register = () => {
             navigate("/login");
 
         } catch (error) {
-            toast.error("Server error. Please try again later !");
+            toast.error("Server error. Server might be waking up, please try again!");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -144,10 +149,18 @@ const Register = () => {
                 </div>
 
                 <button
-                    className='bg-blue-400 min-w-[18rem] w-full -mb-6 rounded-xl py-2 font-bold active:scale-95 cursor-pointer'
+                    className='bg-blue-400 min-w-[18rem] w-full -mb-6 rounded-xl py-2 font-bold active:scale-95 cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed'
                     type="submit"
+                    disabled={loading}
                 >
-                    Register
+                    {loading ? (
+                        <>
+                            <Loader2 className="animate-spin" size={18} />
+                            Registering...
+                        </>
+                    ) : (
+                        "Register"
+                    )}
                 </button>
 
                 <Link

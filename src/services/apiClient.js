@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const defaultBaseUrl = import.meta.env.VITE_API_URL || "http://localhost:8080";
+const defaultBaseUrl = import.meta.env.VITE_API_URL || "https://expense-tracker-backend-1-885b.onrender.com";
 
 const apiClient = axios.create({
     baseURL: defaultBaseUrl,

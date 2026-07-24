@@ -32,9 +32,20 @@ export const AuthProvider = ({ children }) => {
     }, [userName]);
 
     const login = (data) => {
-        if (data.token) setToken(data.token);
-        if (data.userId) setUserId(data.userId.toString());
-        if (data.username || data.userName) setUserName(data.username || data.userName);
+        if (data.token) {
+            setToken(data.token);
+            localStorage.setItem("token", data.token);
+        }
+        if (data.userId) {
+            const idStr = data.userId.toString();
+            setUserId(idStr);
+            localStorage.setItem("userId", idStr);
+        }
+        if (data.username || data.userName) {
+            const name = data.username || data.userName;
+            setUserName(name);
+            localStorage.setItem("userName", name);
+        }
     };
 
     const logout = () => {

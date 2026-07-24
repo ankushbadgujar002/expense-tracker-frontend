@@ -1,5 +1,5 @@
 import { LayoutDashboard, PlusCircle, LogIn, Sun, Moon, LogOut, UserRoundPlus } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import img from '../assets/images/spending.png';
 import Swal from "sweetalert2";
 import { useEffect, useState } from "react";
@@ -10,6 +10,7 @@ import { useAuth } from "../context/AuthContext";
 function Navbar({ theme, toggleTheme }) {
 
     const { token, userName, logout } = useAuth();
+    const navigate = useNavigate();
 
     const handleLogout = () => {
 
@@ -40,7 +41,7 @@ function Navbar({ theme, toggleTheme }) {
                     background: theme.background,
                     color: theme.color
                 }).then(() => {
-                    window.location.href = "/login";
+                    navigate("/login");
                 });
             }
     

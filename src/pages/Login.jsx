@@ -1,6 +1,6 @@
-import { Key, Mail } from 'lucide-react'
+import { Key, Mail, Loader2 } from 'lucide-react'
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import img from '../assets/images/login.png'
 import FloatingInput from '../components/FloatingInput'
 import { toast } from 'react-toastify'
@@ -10,6 +10,7 @@ import { useAuth } from '../context/AuthContext'
 const Login = () => {
 
     const { login } = useAuth();
+    const navigate = useNavigate();
 
     const [data, setData] = useState({
         email: "",
@@ -17,6 +18,7 @@ const Login = () => {
     })
 
     const [error, setError] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -26,8 +28,10 @@ const Login = () => {
             return;
         }
 
+        setLoading(true);
+
         try {
-            const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:8080";
+            const baseUrl = import.meta.env.VITE_API_URL || "https://expense-tracker-backend-1-885b.onrender.com";
             const response = await fetch(`${baseUrl}/api/auth/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -39,6 +43,7 @@ const Login = () => {
             if (!response.ok) {
                 toast.error(result.message || "Login failed");
                 setError(true);
+                setLoading(false);
                 return;
             }
 
@@ -51,12 +56,15 @@ const Login = () => {
             });
 
             setData({ email: "", password: "" });
-            window.location.href = "/dashboard";
+            toast.success("Login Successful!");
+            navigate("/dashboard");
 
         } catch (err) {
             console.error(err.message);
-            toast.error("Something went wrong !");
+            toast.error("Something went wrong! Server might be waking up.");
             setError(true);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -120,10 +128,18 @@ const Login = () => {
                 </div>
 
                 <button
-                    className='bg-blue-400 min-w-[18rem] -mb-8 w-full rounded-xl py-2 font-bold active:scale-95 cursor-pointer'
+                    className='bg-blue-400 min-w-[18rem] -mb-8 w-full rounded-xl py-2 font-bold active:scale-95 cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed'
                     type="submit"
+                    disabled={loading}
                 >
-                    Login
+                    {loading ? (
+                        <>
+                            <Loader2 className="animate-spin" size={18} />
+                            Logging in...
+                        </>
+                    ) : (
+                        "Login"
+                    )}
                 </button>
 
                 <div className='text-center'>
