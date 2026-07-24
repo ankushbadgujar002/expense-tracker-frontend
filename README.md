@@ -2,7 +2,7 @@
 
 ExpenseTracker is a modern full-stack web application for personal expense tracking and financial budgeting. The frontend is built using **React 19**, **Vite**, **Tailwind CSS v4**, and **Axios**, featuring a responsive dark/light UI, interactive data visualization charts, and reactive global authentication state management.
 
-🌐 **Live Application:** 👉 [expense-tracker-ankush.netlify.app](https://expense-tracker-ankush.netlify.app)  
+🌐 **Live Application (Vercel):** 👉 [expense-tracker-frontend-iota-one.vercel.app](https://expense-tracker-frontend-iota-one.vercel.app)  
 ⚙️ **Backend API (Render):** `https://expense-tracker-backend-1-885b.onrender.com`
 
 ---
