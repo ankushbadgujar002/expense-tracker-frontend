@@ -1,78 +1,47 @@
-# ExpenseTracker 💰
+# ExpenseTracker 💰 (Frontend)
 
-ExpenseTracker is a full-stack web application developed using **React.js**, **Spring Boot**, and **MySQL**. The project includes a secure JWT-based authentication system to control access to protected pages.
+ExpenseTracker is a modern full-stack web application for personal expense tracking and financial budgeting. The frontend is built using **React 19**, **Vite**, **Tailwind CSS v4**, and **Axios**, featuring a responsive dark/light UI, interactive data visualization charts, and reactive global authentication state management.
 
-Users must register first, then log in using the same credentials to access the dashboard and expense management features.
-
-🌐 **Live Demo:** 👉 [expense-tracker-ankush.netlify.app](https://expense-tracker-ankush.netlify.app)
+🌐 **Live Application:** 👉 [expense-tracker-ankush.netlify.app](https://expense-tracker-ankush.netlify.app)  
+⚙️ **Backend API (Render):** `https://expense-tracker-backend-1-885b.onrender.com`
 
 ---
 
-## 🔐 Authentication Flow (Core Feature)
+## 🔐 Authentication & State Architecture
 
-This project implements secure JWT-based authentication:
-
-1. User must register with a username, email, and password.
-2. Password is securely hashed using **BCrypt** before storing in the database.
-3. User must log in using the same registered credentials.
-4. On successful login:
-   - A **JWT Token** is generated and stored in `localStorage`
-   - User is redirected to the **Dashboard** page
-5. If a user tries to access protected pages without logging in:
-   - Access is denied
-   - User is redirected to the Login page
-
-> ⚠️ This authentication uses **JWT tokens** with **Spring Security** for secure, stateless authentication.
+- **Global Auth Context (`AuthContext.jsx`)**: Reactive user session management tracking `token`, `userId`, `userName`, and authentication state across all routes.
+- **Centralized API Client (`apiClient.js`)**: Configured Axios instance with environment variable base URL fallback, automated `Bearer` token request interceptor, and global `401 Unauthorized` handling.
+- **Protected Routing**: Navigation guards redirecting unauthenticated users to Login while shielding Dashboard and Add Expense screens.
+- **JWT Storage**: Tokens securely managed via client state and `localStorage`.
 
 ---
 
 ## 🔹 Features
 
-- ✅ User Registration with validation
-- ✅ User Login with JWT Authentication
-- ✅ Protected Routes (Dashboard, Add Expense)
-- ✅ Add, Edit, and Delete Expenses
-- ✅ Budget Management
-- ✅ Monthly Expense Summary
-- ✅ Visual Charts (Pie, Bar, Line)
-- ✅ Expense Categories
-- ✅ Dark Mode Support
-- ✅ Responsive UI Design
-- ✅ Toast Notifications
+- ✅ **User Authentication**: Login & Registration with real-time field validation and toast feedback.
+- ✅ **Reactive Context State**: Instant UI updates on authentication state changes without page reloads.
+- ✅ **Dashboard Analytics**: Category breakdown pie charts, monthly line graphs, and top expense bar charts.
+- ✅ **Budget Management**: Real-time spending indicators and budget threshold warnings.
+- ✅ **Expense Operations**: Add, filter, edit modal, and sweetalert confirmation deletions.
+- ✅ **Theme Customization**: Smooth dark and light mode toggle with state persistence.
+- ✅ **Responsive Design**: Tailored layout for mobile, tablet, and desktop viewports.
 
 ---
 
 ## 🔹 Technologies Used
 
-### Frontend
-- React.js (Vite)
-- React Router DOM
-- Axios
-- Tailwind CSS
-- Recharts
-- React Toastify
-- JavaScript (ES6)
-
-### Backend
-- Java Spring Boot
-- Spring Security
-- JWT (JSON Web Token)
-- Spring Data JPA
-- Hibernate
-- MySQL
-- HikariCP Connection Pool
-- Maven
-
-### Deployment
-- **Netlify** — Frontend Hosting
-- **Railway** — Backend Hosting
-- **Railway MySQL** — Database Hosting
+- **Core**: React 19, JavaScript (ES6+), HTML5, CSS3
+- **Build Tool**: Vite
+- **Styling**: Tailwind CSS v4, Lucide React Icons
+- **HTTP Client**: Axios (Centralized Interceptors)
+- **Charts**: Recharts, Chart.js / react-chartjs-2
+- **Notifications & UI Modals**: React Toastify, SweetAlert2
+- **Deployment**: Netlify
 
 ---
 
 ## 🔹 Project Structure
 
-### Frontend
 ```
 expense-tracker/
 ├── public/
@@ -104,6 +73,9 @@ expense-tracker/
 │   │           ExpenseTable.jsx
 │   │           SummaryCards.jsx
 │   │
+│   ├── context/
+│   │       AuthContext.jsx
+│   │
 │   ├── pages/
 │   │       AddExpense.jsx
 │   │       Dashboard.jsx
@@ -111,6 +83,7 @@ expense-tracker/
 │   │       Register.jsx
 │   │
 │   ├── services/
+│   │       apiClient.js
 │   │       BudgetService.js
 │   │       ExpenseService.js
 │   │
@@ -119,99 +92,9 @@ expense-tracker/
 │           swalTheme.js
 │
 ├── .env
-└── package.json
+├── package.json
+└── vite.config.js
 ```
-
-### Backend
-```
-expense-tracker-backend/
-├── src/
-│   ├── main/
-│   │   ├── java/com/et/expense_tracker_backed/
-│   │   │   │   ExpenseTrackerBackedApplication.java
-│   │   │   │
-│   │   │   ├── auth/
-│   │   │   │   ├── controller/
-│   │   │   │   │       AuthController.java
-│   │   │   │   └── dto/
-│   │   │   │           LoginRequest.java
-│   │   │   │           RegisterRequest.java
-│   │   │   │
-│   │   │   ├── config/
-│   │   │   │       CorsConfig.java
-│   │   │   │       JwtFilter.java
-│   │   │   │       JwtService.java
-│   │   │   │       SecurityConfig.java
-│   │   │   │
-│   │   │   ├── controller/
-│   │   │   │       ExpenseController.java
-│   │   │   │       FrontendController.java
-│   │   │   │       UserController.java
-│   │   │   │
-│   │   │   ├── entity/
-│   │   │   │       Expense.java
-│   │   │   │       User.java
-│   │   │   │
-│   │   │   ├── enums/
-│   │   │   │       Category.java
-│   │   │   │
-│   │   │   ├── exception/
-│   │   │   │       GlobalExceptionHandler.java
-│   │   │   │       ResourceNotFoundException.java
-│   │   │   │
-│   │   │   ├── repository/
-│   │   │   │       ExpenseRepository.java
-│   │   │   │       UserRepository.java
-│   │   │   │
-│   │   │   └── service/
-│   │   │           ExpenseService.java
-│   │   │           UserService.java
-│   │   │
-│   │   └── resources/
-│   │           application.properties
-│   │
-│   └── test/
-│       └── java/com/et/expense_tracker_backed/
-│               ExpenseTrackerBackedApplicationTests.java
-│
-└── pom.xml
-```
-
----
-
-## 🔹 API Endpoints
-
-### Auth
-| Method | Endpoint | Description |
-|---|---|---|
-| POST | `/api/auth/register` | Register new user |
-| POST | `/api/auth/login` | Login user |
-
-### Expenses
-| Method | Endpoint | Description |
-|---|---|---|
-| GET | `/expenses/user/{userId}` | Get all expenses |
-| POST | `/expenses/user/{userId}` | Add expense |
-| PUT | `/expenses/{id}` | Update expense |
-| DELETE | `/expenses/{id}` | Delete expense |
-| GET | `/expenses/monthly-summary/{userId}` | Monthly summary |
-
-### Budget
-| Method | Endpoint | Description |
-|---|---|---|
-| GET | `/users/budget/{userId}` | Get budget |
-| PUT | `/users/budget` | Update budget |
-
----
-
-## 🔹 How Authentication Works (Technical Overview)
-
-- User registers → password hashed with **BCrypt** → stored in **MySQL**
-- User logs in → credentials verified → **JWT Token** generated
-- Token stored in `localStorage`
-- Every protected API request sends token in `Authorization: Bearer <token>` header
-- **JwtFilter** validates token on every request
-- Invalid or missing token → **401 Unauthorized**
 
 ---
 
@@ -219,95 +102,65 @@ expense-tracker-backend/
 
 ### Prerequisites
 - Node.js (v18+)
-- Java (v17+)
-- MySQL
-- Maven
+- npm (v9+)
 
-### Backend Setup
-```bash
-git clone https://github.com/ankushbadgujar002/expense-tracker-backend.git
-cd expense-tracker-backend
-```
+### Installation Steps
 
-Update `src/main/resources/application.properties`:
-```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/expense_tracker
-spring.datasource.username=root
-spring.datasource.password=your_password
-spring.jpa.hibernate.ddl-auto=update
-```
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/ankushbadgujar002/expense-tracker-frontend.git
+   cd expense-tracker-frontend
+   ```
 
-Run:
-```bash
-./mvnw spring-boot:run
-```
-Backend runs on `http://localhost:8080`
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-### Frontend Setup
-```bash
-git clone https://github.com/ankushbadgujar002/expense-tracker-frontend.git
-cd expense-tracker-frontend
-```
+3. **Configure Environment Variables:**
+   Create a `.env` file in the root directory:
+   ```env
+   VITE_API_URL=http://localhost:8080
+   ```
+   *(For connecting to live Render backend, set `VITE_API_URL=https://expense-tracker-backend-1-885b.onrender.com`)*
 
-Create `.env` file:
-```
-VITE_API_URL=http://localhost:8080
-```
+4. **Start Development Server:**
+   ```bash
+   npm run dev
+   ```
+   The application will be accessible at `http://localhost:5173`.
 
-Run:
-```bash
-npm install
-npm run dev
-```
-Frontend runs on `http://localhost:5173`
+5. **Build for Production:**
+   ```bash
+   npm run build
+   ```
 
 ---
 
-## 🔹 Deployment
+## 🔹 Deployment Details
 
-| Layer | Service | URL |
-|---|---|---|
-| ⚛️ Frontend | Netlify | [expense-tracker-ankush.netlify.app](https://expense-tracker-ankush.netlify.app) |
-| 🍃 Backend | Railway | expense-tracker-backend-production-2a2f.up.railway.app |
-| 🗄️ Database | Railway MySQL | Connected Internally |
-
----
-
-## 🔹 Learning Outcomes
-
-- Understanding JWT-based authentication
-- Working with Spring Security
-- Building REST APIs with Spring Boot
-- Connecting React frontend with Spring Boot backend
-- MySQL database design and JPA relationships
-- Deploying full-stack applications for free
-- CORS configuration between frontend and backend
-- Environment variables in Vite (React)
+| Layer | Hosting Provider | Live URL |
+| :--- | :--- | :--- |
+| ⚛️ **Frontend** | **Netlify** | [https://expense-tracker-ankush.netlify.app](https://expense-tracker-ankush.netlify.app) |
+| 🍃 **Backend API** | **Render** | `https://expense-tracker-backend-1-885b.onrender.com` |
+| 🗄️ **Database** | **Aiven MySQL** | Cloud MySQL Database |
 
 ---
 
 ## 🔹 Author
 
-**Ankush Badgujar**
-Information Technology Student
-Frontend Web Developer (Fresher)
-Full Stack Java Developer (Fresher)
+**Ankush Badgujar**  
+Information Technology Student  
+Frontend Web Developer (Fresher) | Full Stack Java Developer (Fresher)
 
-- GitHub: [@ankushbadgujar002](https://github.com/ankushbadgujar002)
-
----
-
-## 🔹 Disclaimer
-
-This project is developed for learning and portfolio purposes. JWT secret keys and database credentials should always be stored securely using environment variables in production environments.
+- **GitHub:** [@ankushbadgujar002](https://github.com/ankushbadgujar002)
 
 ---
 
 ## 🔹 Future Enhancements
 
 - 📧 Email verification on registration
-- 🔑 Forgot password feature
-- 📤 Export expenses to PDF/Excel
-- 👤 User profile management
-- 🔔 Budget limit notifications
-- 📱 Mobile app version
+- 🔑 Password reset & recovery flow
+- 📤 Export transactions to CSV / PDF format
+- 👤 Extended user profile management
+- 📱 Progressive Web App (PWA) support
