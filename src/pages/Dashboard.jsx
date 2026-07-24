@@ -14,8 +14,11 @@ import ExpenseFilters from '../components/dashboard/ExpenseFilters'
 import ExpenseTable from '../components/dashboard/ExpenseTable'
 import EditExpenseModal from '../components/dashboard/EditExpenseModal'
 
+import { useAuth } from '../context/AuthContext'
+
 const Dashboard = () => {
 
+    const { logout } = useAuth();
     const userId = localStorage.getItem("userId");
     const [expenses, setExpenses] = useState([])
     const [totalBudget, setTotalBudget] = useState(0)
@@ -53,8 +56,12 @@ const Dashboard = () => {
                 setCarryForward(0)
             }
 
-        } catch {
-            toast.error("Failed to load budget !")
+        } catch (error) {
+            if (error.response?.status === 401) {
+                logout();
+            } else {
+                toast.error("Failed to load budget !")
+            }
         }
     }
 
@@ -66,10 +73,9 @@ const Dashboard = () => {
 
             console.log("ERROR STATUS:", error.response?.status);
 
-            // ONLY logout on 401 (unauthenticated)
+            // Logout on 401 (unauthenticated / token invalid)
             if (error.response?.status === 401) {
-                localStorage.removeItem("token");
-                localStorage.removeItem("userId");
+                logout();
                 navigate("/login");
             }
 
