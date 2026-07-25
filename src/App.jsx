@@ -26,6 +26,14 @@ const AppContent = () => {
     localStorage.setItem("theme", theme);
   }, [theme]);
 
+  useEffect(() => {
+    // Quietly warm up the Render backend on app mount
+    const baseUrl = import.meta.env.VITE_API_URL || "https://expense-tracker-backend-1-885b.onrender.com";
+    fetch(`${baseUrl}/api/auth/health`).catch(() => {
+      // Ignore background warmup errors
+    });
+  }, []);
+
   const toggleTheme = () => {
     setTheme(prev => (prev === "dark" ? "light" : "dark"));
   };

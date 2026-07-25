@@ -30,13 +30,19 @@ const Login = () => {
 
         setLoading(true);
 
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 seconds timeout for free tier cold start
+
         try {
             const baseUrl = import.meta.env.VITE_API_URL || "https://expense-tracker-backend-1-885b.onrender.com";
             const response = await fetch(`${baseUrl}/api/auth/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data)
+                body: JSON.stringify(data),
+                signal: controller.signal
             });
+
+            clearTimeout(timeoutId);
 
             const result = await response.json();
 
@@ -60,8 +66,13 @@ const Login = () => {
             navigate("/dashboard");
 
         } catch (err) {
+            clearTimeout(timeoutId);
             console.error(err.message);
-            toast.error("Something went wrong! Server might be waking up.");
+            if (err.name === 'AbortError') {
+                toast.error("Server is waking up (Render cold start). Please tap Login again!");
+            } else {
+                toast.error("Something went wrong! Server might be waking up.");
+            }
             setError(true);
         } finally {
             setLoading(false);

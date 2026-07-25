@@ -28,6 +28,9 @@ const Register = () => {
 
         setLoading(true);
 
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000);
+
         try {
             const baseUrl = import.meta.env.VITE_API_URL || "https://expense-tracker-backend-1-885b.onrender.com";
             const response = await fetch(`${baseUrl}/api/auth/register`, {
@@ -35,8 +38,11 @@ const Register = () => {
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify(data)
+                body: JSON.stringify(data),
+                signal: controller.signal
             });
+
+            clearTimeout(timeoutId);
 
             const result = await response.json();
 
@@ -55,7 +61,12 @@ const Register = () => {
             navigate("/login");
 
         } catch (error) {
-            toast.error("Server error. Server might be waking up, please try again!");
+            clearTimeout(timeoutId);
+            if (error.name === 'AbortError') {
+                toast.error("Server is waking up (Render cold start). Please tap Register again!");
+            } else {
+                toast.error("Server error. Server might be waking up, please try again!");
+            }
         } finally {
             setLoading(false);
         }
