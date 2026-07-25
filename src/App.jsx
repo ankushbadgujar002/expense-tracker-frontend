@@ -1,13 +1,22 @@
 import { Navigate, Routes, Route } from "react-router-dom";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState, lazy, Suspense } from "react";
 import Navbar from "./components/Navbar";
-import Dashboard from "./pages/Dashboard";
-import AddExpense from "./pages/AddExpense";
-import Register from "./pages/Register";
-import Login from "./pages/Login";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { Bounce, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Loader2 } from "lucide-react";
+
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const AddExpense = lazy(() => import("./pages/AddExpense"));
+const Register = lazy(() => import("./pages/Register"));
+const Login = lazy(() => import("./pages/Login"));
+
+const PageLoader = () => (
+  <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
+    <Loader2 className="animate-spin text-blue-400" size={36} />
+    <span className="text-gray-500 dark:text-gray-400 font-medium">Loading page...</span>
+  </div>
+);
 
 const AppContent = () => {
   const [theme, setTheme] = useState(() => {
@@ -43,21 +52,23 @@ const AppContent = () => {
       
       <Navbar theme={theme} toggleTheme={toggleTheme} />
 
-      <Routes>
-        <Route path="/" element={isLoggedIn ? <Navigate to="/dashboard" /> : <Login />} />
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
+          <Route path="/" element={isLoggedIn ? <Navigate to="/dashboard" /> : <Login />} />
 
-        <Route
-          path="/dashboard"
-          element={isLoggedIn ? <Dashboard /> : <Navigate to="/login" />}
-        />
-        <Route
-          path="/add-expense"
-          element={isLoggedIn ? <AddExpense /> : <Navigate to="/login" />}
-        />
+          <Route
+            path="/dashboard"
+            element={isLoggedIn ? <Dashboard /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/add-expense"
+            element={isLoggedIn ? <AddExpense /> : <Navigate to="/login" />}
+          />
 
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-      </Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </Suspense>
 
       <ToastContainer
         position="top-center"

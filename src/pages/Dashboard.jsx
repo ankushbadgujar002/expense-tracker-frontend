@@ -29,8 +29,13 @@ const Dashboard = () => {
     const [selectedFilter, setSelectedFilter] = useState("")
     const [searchText, setSearchText] = useState("")
     const [sortOption, setSortOption] = useState("")
+    const [startDate, setStartDate] = useState("")
+    const [endDate, setEndDate] = useState("")
     const [monthlyData, setMonthlyData] = useState([])
     const [lastAlert, setLastAlert] = useState(null)
+    const [loading, setLoading] = useState(true)
+    const [currentPage, setCurrentPage] = useState(1)
+    const itemsPerPage = 10
 
     const navigate = useNavigate();
 
@@ -73,13 +78,10 @@ const Dashboard = () => {
 
             console.log("ERROR STATUS:", error.response?.status);
 
-            // Logout on 401 (unauthenticated / token invalid)
             if (error.response?.status === 401) {
                 logout();
                 navigate("/login");
             }
-
-            // For 403 → just show error
             else if (error.response?.status === 403) {
                 toast.error("Access denied - check token");
             }
@@ -94,6 +96,7 @@ const Dashboard = () => {
                 return;
             }
 
+            setLoading(true);
             try {
                 await loadExpenses();
                 await fetchBudget();
@@ -104,6 +107,8 @@ const Dashboard = () => {
             } catch (error) {
                 console.log(error);
                 toast.error("Failed to load monthly data");
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -137,6 +142,10 @@ const Dashboard = () => {
             setFormData(selectedExpense)
         }
     }, [selectedExpense])
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [selectedFilter, searchText, sortOption, startDate, endDate]);
 
     const handleDelete = async (id) => {
         const result = await Swal.fire({
@@ -254,6 +263,14 @@ const Dashboard = () => {
                 if (!searchText) return true
                 return exp.title.toLowerCase().includes(searchText.toLowerCase())
             })
+            .filter(exp => {
+                if (!startDate) return true
+                return exp.date >= startDate
+            })
+            .filter(exp => {
+                if (!endDate) return true
+                return exp.date <= endDate
+            })
             .sort((a, b) => {
                 if (sortOption === "HIGH") return b.amount - a.amount
                 if (sortOption === "LOW") return a.amount - b.amount
@@ -263,7 +280,13 @@ const Dashboard = () => {
                 if (sortOption === "Z-A") return b.category.localeCompare(a.category)
                 return 0
             })
-    }, [expenses, selectedFilter, searchText, sortOption])
+    }, [expenses, selectedFilter, searchText, sortOption, startDate, endDate])
+
+    const totalPages = Math.ceil(processedExpenses.length / itemsPerPage) || 1;
+    const paginatedExpenses = useMemo(() => {
+        const start = (currentPage - 1) * itemsPerPage;
+        return processedExpenses.slice(start, start + itemsPerPage);
+    }, [processedExpenses, currentPage, itemsPerPage]);
 
     const categoryData = useMemo(() => {
         return Object.values(
@@ -286,13 +309,21 @@ const Dashboard = () => {
                     Expense Dashboard
                 </h1>
 
-                <SummaryCards
-                    totalBudget={totalBudget}
-                    totalSpent={totalSpent}
-                    remaining={remaining}
-                    carryForward={carryForward}
-                    handleBudget={handleBudget}
-                />
+                {loading ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                        {[1, 2, 3, 4].map(i => (
+                            <div key={i} className="h-28 bg-gray-200 dark:bg-gray-800 animate-pulse rounded-2xl"></div>
+                        ))}
+                    </div>
+                ) : (
+                    <SummaryCards
+                        totalBudget={totalBudget}
+                        totalSpent={totalSpent}
+                        remaining={remaining}
+                        carryForward={carryForward}
+                        handleBudget={handleBudget}
+                    />
+                )}
 
                 <BudgetUsageChart
                     categoryData={categoryData}
@@ -315,6 +346,10 @@ const Dashboard = () => {
                             setSortOption={setSortOption}
                             searchText={searchText}
                             setSearchText={setSearchText}
+                            startDate={startDate}
+                            setStartDate={setStartDate}
+                            endDate={endDate}
+                            setEndDate={setEndDate}
                             expenses={expenses}
                         />
 
@@ -325,16 +360,51 @@ const Dashboard = () => {
 
                     <div className="expense mt-6 overflow-y-auto flex-1">
 
-                        {processedExpenses.length === 0 ? (
-                            <p className="text-center text-gray-500 dark:text-white">
+                        {loading ? (
+                            <div className="space-y-3 p-4">
+                                {[1, 2, 3, 4, 5].map(i => (
+                                    <div key={i} className="h-12 bg-gray-200 dark:bg-gray-800 animate-pulse rounded-xl"></div>
+                                ))}
+                            </div>
+                        ) : processedExpenses.length === 0 ? (
+                            <p className="text-center text-gray-500 dark:text-white py-6">
                                 No expenses found
                             </p>
                         ) : (
-                            <ExpenseTable
-                                processedExpenses={processedExpenses}
-                                handleDelete={handleDelete}
-                                handleEdit={handleEdit}
-                            />
+                            <>
+                                <ExpenseTable
+                                    processedExpenses={paginatedExpenses}
+                                    handleDelete={handleDelete}
+                                    handleEdit={handleEdit}
+                                />
+
+                                {totalPages > 1 && (
+                                    <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-100 dark:border-gray-800 text-sm">
+                                        <span className="text-gray-500 dark:text-gray-400">
+                                            Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, processedExpenses.length)} of {processedExpenses.length} entries
+                                        </span>
+                                        <div className="flex items-center gap-2">
+                                            <button
+                                                disabled={currentPage === 1}
+                                                onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
+                                                className="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                                            >
+                                                Previous
+                                            </button>
+                                            <span className="px-3 py-1.5 font-medium text-gray-700 dark:text-gray-300">
+                                                Page {currentPage} of {totalPages}
+                                            </span>
+                                            <button
+                                                disabled={currentPage === totalPages}
+                                                onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
+                                                className="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                                            >
+                                                Next
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+                            </>
                         )}
 
                     </div>
