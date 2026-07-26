@@ -28,9 +28,17 @@ graph TD
     B -->|Renders Visual Data| F[Recharts & Chart.js Visualizations]
 ```
 
+
+## 🖼️ App Screenshots
+
+| 📊 Dashboard & Spending Analytics | 🔐 Login Screen |
+|---|---|
+| ![Dashboard](src/assets/images/spending.png) | ![Login](src/assets/images/login.png) |
+
 ---
 
 ## 🔐 Key Architecture Highlights
+
 
 - **Global Authentication Context (`AuthContext.jsx`)**: Centralized reactive session management tracking `token`, `userId`, `userName`, and authentication status across all client routes.
 - **Centralized Axios Client (`apiClient.js`)**:
@@ -191,3 +199,23 @@ Information Technology Student
 Frontend Web Developer (Fresher) | Full Stack Java Developer (Fresher)
 
 - **GitHub:** [@ankushbadgujar002](https://github.com/ankushbadgujar002)
+
+---
+
+## 🔹 Learning Outcomes
+
+- Reactive global state management with React Context API across protected routes
+- Centralized Axios interceptor pattern for automatic JWT injection and 401 handling
+- Multi-chart integration with Recharts and Chart.js for financial data visualization
+- Tailwind CSS v4 utility-first responsive design with dark/light theme persistence
+- Deploying Vite SPA to Netlify with client-side `_redirects` configuration
+
+---
+
+## 🔹 Future Enhancements
+
+- 📧 Email verification on registration
+- 🔑 Password reset & recovery flow
+- 📤 Export transactions to CSV / PDF format
+- 👤 Extended user profile management
+- 📱 Progressive Web App (PWA) support
