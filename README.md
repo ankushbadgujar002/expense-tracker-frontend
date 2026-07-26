@@ -1,42 +1,71 @@
 # ExpenseTracker 💰 (Frontend)
 
-ExpenseTracker is a modern full-stack web application for personal expense tracking and financial budgeting. The frontend is built using **React 19**, **Vite**, **Tailwind CSS v4**, and **Axios**, featuring a responsive dark/light UI, interactive data visualization charts, and reactive global authentication state management.
+![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)
+![Vite](https://img.shields.io/badge/Vite-6.3-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
+![Axios](https://img.shields.io/badge/Axios-HTTP_Client-5A29E4?style=for-the-badge&logo=axios&logoColor=white)
+![Netlify](https://img.shields.io/badge/Netlify-Deployed-00C7B7?style=for-the-badge&logo=netlify&logoColor=white)
+![Vercel](https://img.shields.io/badge/Vercel-Live_Demo-000000?style=for-the-badge&logo=vercel&logoColor=white)
 
-🌐 **Live Application (Vercel):** 👉 [expense-tracker-frontend-iota-one.vercel.app](https://expense-tracker-frontend-iota-one.vercel.app)  
+ExpenseTracker is a responsive, modern single-page application (SPA) built with **React 19**, **Vite**, **Tailwind CSS v4**, and **Axios**. It features reactive state management, interactive data visualization charts (**Recharts** & **Chart.js**), dark/light mode toggle, dynamic budget tracking, and real-time JWT authentication handling.
+
+🌐 **Live Web Application (Vercel):** 👉 [expense-tracker-frontend-iota-one.vercel.app](https://expense-tracker-frontend-iota-one.vercel.app)  
+🌐 **Live Mirror (Netlify):** [expense-tracker-ankush.netlify.app](https://expense-tracker-ankush.netlify.app)  
 ⚙️ **Backend API (Render):** `https://expense-tracker-backend-1-885b.onrender.com`
 
 ---
 
-## 🔐 Authentication & State Architecture
+## 🏗️ System Architecture & Data Flow
 
-- **Global Auth Context (`AuthContext.jsx`)**: Reactive user session management tracking `token`, `userId`, `userName`, and authentication state across all routes.
-- **Centralized API Client (`apiClient.js`)**: Configured Axios instance with environment variable base URL fallback, automated `Bearer` token request interceptor, and global `401 Unauthorized` handling.
-- **Protected Routing**: Navigation guards redirecting unauthenticated users to Login while shielding Dashboard and Add Expense screens.
-- **JWT Storage**: Tokens securely managed via client state and `localStorage`.
+```mermaid
+graph TD
+    A[User Browser] -->|Interacts with UI| B[React 19 Components]
+    B -->|Reads Session / JWT| C[AuthContext.jsx]
+    B -->|Trigger API Requests| D[apiClient.js Axios Instance]
+    D -->|Injects Authorization Bearer Header| E[Spring Boot REST API Render]
+    E -->|JSON Response| D
+    D -->|Updates Reactive State| B
+    B -->|Renders Visual Data| F[Recharts & Chart.js Visualizations]
+```
+
+---
+
+## 🔐 Key Architecture Highlights
+
+- **Global Authentication Context (`AuthContext.jsx`)**: Centralized reactive session management tracking `token`, `userId`, `userName`, and authentication status across all client routes.
+- **Centralized Axios Client (`apiClient.js`)**:
+  - Request interceptor automatically attaches `Bearer <token>` from `localStorage` to all outgoing requests.
+  - Response interceptor handles global errors (including `401 Unauthorized` token expiry handling).
+- **Protected Client Routes**: Guards shield private pages (`/dashboard`, `/add-expense`) from unauthenticated access, automatically redirecting guests to Login.
+- **Visual Analytics**: Interactive Category Pie Charts, Monthly Spending Line Graphs, and Top Category Bar Charts powered by **Recharts** and **Chart.js**.
+
+> [!NOTE]
+> Environment fallback: `apiClient.js` automatically targets `VITE_API_URL` when provided, defaulting to `http://localhost:8080` for local development.
 
 ---
 
 ## 🔹 Features
 
-- ✅ **User Authentication**: Login & Registration with real-time field validation and toast feedback.
-- ✅ **Reactive Context State**: Instant UI updates on authentication state changes without page reloads.
-- ✅ **Dashboard Analytics**: Category breakdown pie charts, monthly line graphs, and top expense bar charts.
-- ✅ **Budget Management**: Real-time spending indicators and budget threshold warnings.
-- ✅ **Expense Operations**: Add, filter, edit modal, and sweetalert confirmation deletions.
-- ✅ **Theme Customization**: Smooth dark and light mode toggle with state persistence.
-- ✅ **Responsive Design**: Tailored layout for mobile, tablet, and desktop viewports.
+- ✅ **JWT Authentication**: Registration and Login with client-side validation and toast notifications.
+- ✅ **Reactive Context State**: Immediate UI updates upon login/logout without page reloads.
+- ✅ **Dashboard Analytics**: Category breakdown pie charts, monthly trend graphs, and budget indicator cards.
+- ✅ **Budget Management**: Set spending targets and view automated budget carry-forward warnings.
+- ✅ **Expense Operations**: Add, filter, update (modal), and delete expenses with SweetAlert2 prompts.
+- ✅ **Theme Customization**: Seamless dark and light theme toggle with persistent state.
+- ✅ **Fully Responsive**: Tailored layout across mobile, tablet, and desktop screens.
 
 ---
 
 ## 🔹 Technologies Used
 
-- **Core**: React 19, JavaScript (ES6+), HTML5, CSS3
-- **Build Tool**: Vite
+- **Core**: React 19, React DOM 19, JavaScript (ES6+), HTML5, CSS3
+- **Build Tool**: Vite 6
 - **Styling**: Tailwind CSS v4, Lucide React Icons
-- **HTTP Client**: Axios (Centralized Interceptors)
-- **Charts**: Recharts, Chart.js / react-chartjs-2
-- **Notifications & UI Modals**: React Toastify, SweetAlert2
-- **Deployment**: Netlify
+- **HTTP Client**: Axios (with custom request/response interceptors)
+- **Charts & Data Visualization**: Recharts 3, Chart.js 4, `react-chartjs-2`
+- **UI Notifications & Modals**: React Toastify, React Hot Toast, SweetAlert2
+- **Routing**: React Router DOM 7
+- **Deployment**: Netlify & Vercel
 
 ---
 
@@ -98,11 +127,19 @@ expense-tracker/
 
 ---
 
+## 🔹 Environment Variables Reference
+
+| Variable | Description | Default / Local | Production Example |
+|---|---|---|---|
+| `VITE_API_URL` | Base URL of Spring Boot REST API | `http://localhost:8080` | `https://expense-tracker-backend-1-885b.onrender.com` |
+
+---
+
 ## 🔹 How to Run Locally
 
 ### Prerequisites
-- Node.js (v18+)
-- npm (v9+)
+- **Node.js** (v18+)
+- **npm** (v9+)
 
 ### Installation Steps
 
@@ -122,7 +159,7 @@ expense-tracker/
    ```env
    VITE_API_URL=http://localhost:8080
    ```
-   *(For connecting to live Render backend, set `VITE_API_URL=https://expense-tracker-backend-1-885b.onrender.com`)*
+   *(To test against the live Render backend, set `VITE_API_URL=https://expense-tracker-backend-1-885b.onrender.com`)*
 
 4. **Start Development Server:**
    ```bash
@@ -139,11 +176,11 @@ expense-tracker/
 
 ## 🔹 Deployment Details
 
-| Layer | Hosting Provider | Live URL |
+| Component | Provider | Live URL |
 | :--- | :--- | :--- |
-| ⚛️ **Frontend** | **Netlify** | [https://expense-tracker-ankush.netlify.app](https://expense-tracker-ankush.netlify.app) |
-| 🍃 **Backend API** | **Render** | `https://expense-tracker-backend-1-885b.onrender.com` |
-| 🗄️ **Database** | **Railway MySQL** | Cloud MySQL Database (Free, No Expiry) |
+| ⚛️ **Frontend App** | **Vercel / Netlify** | [expense-tracker-frontend-iota-one.vercel.app](https://expense-tracker-frontend-iota-one.vercel.app) |
+| 🍃 **Backend API** | **Render.com** | `https://expense-tracker-backend-1-885b.onrender.com` |
+| 🗄️ **Database** | **Railway.app** | Managed Cloud MySQL 8.4 |
 
 ---
 
@@ -154,13 +191,3 @@ Information Technology Student
 Frontend Web Developer (Fresher) | Full Stack Java Developer (Fresher)
 
 - **GitHub:** [@ankushbadgujar002](https://github.com/ankushbadgujar002)
-
----
-
-## 🔹 Future Enhancements
-
-- 📧 Email verification on registration
-- 🔑 Password reset & recovery flow
-- 📤 Export transactions to CSV / PDF format
-- 👤 Extended user profile management
-- 📱 Progressive Web App (PWA) support
