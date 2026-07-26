@@ -143,7 +143,7 @@ expense-tracker/
 | :--- | :--- | :--- |
 | ⚛️ **Frontend** | **Netlify** | [https://expense-tracker-ankush.netlify.app](https://expense-tracker-ankush.netlify.app) |
 | 🍃 **Backend API** | **Render** | `https://expense-tracker-backend-1-885b.onrender.com` |
-| 🗄️ **Database** | **Aiven MySQL** | Cloud MySQL Database |
+| 🗄️ **Database** | **Railway MySQL** | Cloud MySQL Database (Free, No Expiry) |
 
 ---
 
